@@ -9,25 +9,20 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'Roboto', sans-serif;
-    background-color: #F5F5F5;
-    color: #333;
-    overflow-x: hidden;
+    background-color: #F8FAFC;
+    color: #0F172A;
+    overflow-x: hidden; /* Fixes the white bar on the right */
+    width: 100vw;
   }
 
-  h1, h2, h3, h4 {
+  h1, h2, h3 {
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
+    letter-spacing: -1px; /* Modern architectural feel */
   }
 
   button {
     cursor: pointer;
     border: none;
-    outline: none;
-    transition: all 0.3s ease;
-  }
-
-  a {
-    text-decoration: none;
-    color: inherit;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 `;

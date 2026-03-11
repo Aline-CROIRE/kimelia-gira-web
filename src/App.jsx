@@ -3,21 +3,31 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './theme/Theme';
 import { GlobalStyle } from './theme/GlobalStyles';
+import { AuthProvider } from './context/AuthContext';
 import './translations/i18n';
 
-// Simple Page Components for testing
-const Home = () => <h1>Home Page - Welcome to Kimelia Gira</h1>;
+// Components
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+// Dummy Pages for testing
+
+const Login = () => <div style={{padding: '50px'}}><h1>Login Page</h1></div>;
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

@@ -5,43 +5,40 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 const resources = {
   en: {
     translation: {
-      welcome: "Find Your Dream Home",
-      search: "Search Properties",
-      login: "Login",
-      register: "Register",
-      valuation: "AI Valuation",
-      home: "Home"
+      nav_home: "Home",
+      nav_listings: "Properties",
+      nav_valuation: "AI Valuation",
+      nav_login: "Login",
+      nav_logout: "Logout",
+      nav_dashboard: "Dashboard"
     }
   },
   rw: {
     translation: {
-      welcome: "Shaka Inzu Yahoze Mu Nzozi Zawe",
-      search: "Shaka Umutungo",
-      login: "Injira",
-      register: "Kwiyandikisha",
-      valuation: "Igereranya rya AI",
-      home: "Ahabanza"
+      nav_home: "Ahabanza",
+      nav_listings: "Imitungo",
+      nav_valuation: "Igereranya AI",
+      nav_login: "Injira",
+      nav_logout: "Sohoka",
+      nav_dashboard: "Ibiherereye"
     }
   },
   fr: {
     translation: {
-      welcome: "Trouvez la Maison de Vos Rêves",
-      search: "Rechercher des Propriétés",
-      login: "Connexion",
-      register: "S'inscrire",
-      valuation: "Évaluation IA",
-      home: "Accueil"
+      nav_home: "Accueil",
+      nav_listings: "Propriétés",
+      nav_valuation: "Évaluation IA",
+      nav_login: "Connexion",
+      nav_logout: "Déconnexion",
+      nav_dashboard: "Tableau de bord"
     }
   }
 };
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: 'en',
-    interpolation: { escapeValue: false }
-  });
+i18n.use(LanguageDetector).use(initReactI18next).init({
+  resources,
+  fallbackLng: 'en',
+  interpolation: { escapeValue: false }
+});
 
 export default i18n;
