@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import TrustBar from '../components/TrustBar';
+import FeaturedSection from '../components/FeaturedSection';
 
 const Home = () => {
   return (
@@ -9,7 +10,8 @@ const Home = () => {
       <Navbar />
       <Hero />
       <TrustBar />
-      {/* Featured Properties Section Next */}
+      <FeaturedSection />
+      {/* We will add Footer later */}
     </>
   );
 };
