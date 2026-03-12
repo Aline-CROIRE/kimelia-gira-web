@@ -1,17 +1,15 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import TrustBar from '../components/TrustBar';
-import FeaturedSection from '../components/FeaturedSection';
+import FeaturedGrid from '../components/FeaturedGrid';
 
 const Home = () => {
   return (
     <>
-      <Navbar />
       <Hero />
       <TrustBar />
-      <FeaturedSection />
-      {/* We will add Footer later */}
+      <FeaturedGrid />
+      {/* Footer will go here */}
     </>
   );
 };

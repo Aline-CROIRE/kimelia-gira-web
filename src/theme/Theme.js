@@ -1,22 +1,23 @@
 export const theme = {
   colors: {
     primary: '#1F3A93',
-    accent: '#FFD700',
+    secondary: '#4361EE', 
+    accent: '#FFD700',    
     white: '#FFFFFF',
+    bgSlate: '#F1F5F9',   
     textDark: '#0F172A',
     textMuted: '#64748B',
-    bgLight: '#F8FAFC',
   },
   gradients: {
-    brand: 'linear-gradient(135deg, #1F3A93 0%, #2D52D1 60%, #FFD700 100%)',
-    // Lighter overlay so the house image is very clear
-    overlay: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4))',
-  },
-  dimensions: {
-    navHeight: '80px'
+    /* THE MASTER SIGNATURE GRADIENT: Sapphire -> Modern Blue -> Gold */
+    brand: 'linear-gradient(135deg, #1F3A93 0%, #4361EE 50%, #FFD700 100%)',
+    /* Premium Gold Foil for small accents */
+    goldMetallic: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
+    /* Dark Overlay for Hero */
+    heroOverlay: 'linear-gradient(180deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)',
   },
   shadows: {
-    nav: '0 4px 20px rgba(0, 0, 0, 0.08)',
-    search: '0 20px 50px rgba(31, 58, 147, 0.15)',
+    premium: '0 15px 35px rgba(31, 58, 147, 0.15)',
+    goldGlow: '0 8px 25px rgba(255, 215, 0, 0.25)',
   }
 };

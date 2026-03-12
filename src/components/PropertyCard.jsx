@@ -1,106 +1,84 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
-import { MapPin, Bed, Bath, Maximize, Heart } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Bed, Bath, Maximize, Heart, ChevronRight, ChevronLeft, Trees } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import API from '../services/api';
 
 const Card = styled(motion.div)`
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: ${({ theme }) => theme.shadows.soft};
-  transition: 0.3s;
-  position: relative;
+  background: white; border-radius: 28px; overflow: hidden;
+  box-shadow: 0 10px 30px rgba(31, 58, 147, 0.05);
+  border: 1px solid #E2E8F0; position: relative; cursor: pointer;
+  &:hover { transform: translateY(-12px); box-shadow: 0 30px 60px rgba(0,0,0,0.12); }
 `;
 
-const ImageWrapper = styled.div`
-  height: 220px;
-  width: 100%;
-  position: relative;
-  img { width: 100%; height: 100%; object-fit: cover; }
+const Gallery = styled.div`
+  height: 280px; position: relative; overflow: hidden; background: #000;
 `;
 
-const PriceBadge = styled.div`
-  position: absolute;
-  top: 20px; left: 20px;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  padding: 8px 15px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.9rem;
-`;
-
-const Content = styled.div`
-  padding: 20px;
-`;
-
-const Title = styled.h3`
-  font-size: 1.2rem;
-  color: ${({ theme }) => theme.colors.textDark};
-  margin-bottom: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const Location = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 0.85rem;
-  margin-bottom: 20px;
-`;
-
-const Specs = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding-top: 15px;
-  border-top: 1px solid #f0f0f0;
-`;
-
-const SpecItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.8rem;
-  color: ${({ theme }) => theme.colors.textDark};
-  font-weight: 600;
-`;
-
-const FavoriteBtn = styled.button`
-  position: absolute;
-  top: 20px; right: 20px;
-  background: white;
-  width: 35px; height: 35px;
-  border-radius: 50%;
+const NavBtn = styled.button`
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.2); backdrop-filter: blur(8px);
+  color: white; border-radius: 50%; width: 36px; height: 36px;
   display: flex; justify-content: center; align-items: center;
-  color: #ff4757;
+  z-index: 10; opacity: 0; transition: 0.3s;
+  ${Gallery}:hover & { opacity: 1; }
+  &:hover { background: #FFD700; color: #1F3A93; }
 `;
 
-const PropertyCard = ({ property }) => {
-  // Handle multi-language titles (Defaults to English)
-  const title = property.title?.en || "Premium Property";
-  const formattedPrice = new Intl.NumberFormat('en-RW', { style: 'currency', currency: 'RWF' }).format(property.price);
+const Badge = styled.div`
+  position: absolute; top: 20px; left: 20px; z-index: 10;
+  background: ${({ theme }) => theme.gradients.brand}; /* 3-Stop Gradient */
+  color: white; padding: 8px 16px; border-radius: 10px;
+  font-weight: 800; font-size: 0.65rem; text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+`;
+
+const PriceGlass = styled.div`
+  position: absolute; bottom: 20px; left: 20px; z-index: 10;
+  background: linear-gradient(135deg, rgba(31, 58, 147, 0.9), rgba(15, 23, 42, 0.9));
+  padding: 12px 22px; border-radius: 14px; border-left: 4px solid #FFD700;
+  color: white; font-weight: 800; font-size: 1.2rem;
+`;
+
+const PropertyCard = ({ data }) => {
+  const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const [idx, setIdx] = useState(0);
+  const title = data.title[i18n.language] || data.title['en'];
+
+  const next = (e) => { e.stopPropagation(); setIdx((prev) => (prev + 1) % data.images.length); };
+  const prev = (e) => { e.stopPropagation(); setIdx((prev) => (prev === 0 ? data.images.length - 1 : prev - 1)); };
 
   return (
-    <Card whileHover={{ y: -10 }}>
-      <ImageWrapper>
-        <img src={property.images[0] || 'https://via.placeholder.com/400x300'} alt={title} />
-        <PriceBadge>{formattedPrice}</PriceBadge>
-        <FavoriteBtn><Heart size={18} /></FavoriteBtn>
-      </ImageWrapper>
-      <Content>
-        <Title>{title}</Title>
-        <Location>
-          <MapPin size={14} /> {property.location?.address || "Kigali, Rwanda"}
-        </Location>
-        <Specs>
-          <SpecItem><Bed size={16} color="#1F3A93"/> {property.features?.bedrooms || 0} Bed</SpecItem>
-          <SpecItem><Bath size={16} color="#1F3A93"/> {property.features?.bathrooms || 0} Bath</SpecItem>
-          <SpecItem><Maximize size={16} color="#1F3A93"/> {property.features?.size || 0} m²</SpecItem>
-        </Specs>
-      </Content>
+    <Card onClick={() => navigate(`/properties/${data._id}`)}>
+      <Gallery>
+        <Badge>{data.propertyType}</Badge>
+        <AnimatePresence mode="wait">
+          <motion.img key={idx} src={data.images[idx]} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} style={{width:'100%', height:'100%', objectFit:'cover'}} />
+        </AnimatePresence>
+        <NavBtn style={{left: '12px'}} onClick={prev}><ChevronLeft size={20}/></NavBtn>
+        <NavBtn style={{right: '12px'}} onClick={next}><ChevronRight size={20}/></NavBtn>
+        <PriceGlass>{new Intl.NumberFormat().format(data.price)} RWF</PriceGlass>
+      </Gallery>
+      <div style={{padding: '25px'}}>
+        <h4 style={{fontSize: '1.3rem', color: '#1F3A93', fontWeight: 800, marginBottom: '6px'}}>{title}</h4>
+        <div style={{display:'flex', alignItems:'center', gap:'5px', color:'#64748B', fontSize:'0.85rem', marginBottom:'20px'}}><MapPin size={14} color="#FFD700"/> {data.location.address}</div>
+        <div style={{display:'flex', justifyContent:'space-between', borderTop:'1.5px solid #F1F5F9', paddingTop:'15px'}}>
+          {data.propertyType === 'land' ? (
+             <div style={{display:'flex', alignItems:'center', gap:'8px', fontWeight:800, color:'#1F3A93'}}><Trees size={20} color="#FFD700"/> {data.features.size} m² TOTAL</div>
+          ) : (
+            <>
+              <div style={{display:'flex', gap:'5px', fontWeight:700, color:'#1F3A93'}}><Bed size={18}/> {data.features.bedrooms}</div>
+              <div style={{display:'flex', gap:'5px', fontWeight:700, color:'#1F3A93'}}><Bath size={18}/> {data.features.bathrooms}</div>
+              <div style={{display:'flex', gap:'5px', fontWeight:700, color:'#1F3A93'}}><Maximize size={18}/> {data.features.size} m²</div>
+            </>
+          )}
+        </div>
+      </div>
     </Card>
   );
 };
