@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import API from '../services/api';
 import PropertyCard from './PropertyCard';
+import { getProperties } from '../services/propertyService';
+
+
 
 const Section = styled.section`
   padding: 100px 8%; background: #F1F5F9;
@@ -37,11 +40,10 @@ const FeaturedGrid = () => {
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
-    API.get('/properties').then(res => {
-      const combined = [...res.data.data, ...eliteDummyData].slice(0, 6);
-      setProperties(combined);
-    }).catch(() => setProperties(eliteDummyData));
+    getProperties().then(data => setProperties(data.slice(0, 6)));
   }, []);
+
+ 
 
   return (
     <Section>
