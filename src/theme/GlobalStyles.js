@@ -8,21 +8,15 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: #F8FAFC;
-    color: #0F172A;
-    overflow-x: hidden; /* Fixes the white bar on the right */
+    color: #1A1A1A;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
     width: 100vw;
   }
 
-  h1, h2, h3 {
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: -1px; /* Modern architectural feel */
-  }
-
-  button {
-    cursor: pointer;
-    border: none;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Smooth scrolling for the whole page */
+  html {
+    scroll-behavior: smooth;
   }
 `;

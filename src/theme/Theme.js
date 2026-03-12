@@ -1,19 +1,22 @@
 export const theme = {
   colors: {
-    primary: '#1F3A93',      // Deep Blue
-    accent: '#FFD700',       // Premium Gold
-    bgLight: '#F5F7FA',      
+    primary: '#1F3A93',
+    accent: '#FFD700',
     white: '#FFFFFF',
-    textDark: '#1A1A1A',     
-    textSecondary: '#6B7280', 
+    textDark: '#0F172A',
+    textMuted: '#64748B',
+    bgLight: '#F8FAFC',
   },
   gradients: {
-    // We add a mid-stop to make the gradient look vibrant, not muddy
-    brand: 'linear-gradient(135deg, #1F3A93 0%, #3b5bdb 50%, #FFD700 100%)',
-    heroOverlay: 'linear-gradient(180deg, rgba(15, 23, 42, 0.4) 0%, rgba(15, 23, 42, 0.7) 100%)',
+    brand: 'linear-gradient(135deg, #1F3A93 0%, #2D52D1 60%, #FFD700 100%)',
+    // Lighter overlay so the house image is very clear
+    overlay: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4))',
+  },
+  dimensions: {
+    navHeight: '80px'
   },
   shadows: {
-    glass: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-    card: '0 20px 60px rgba(0, 0, 0, 0.1)',
+    nav: '0 4px 20px rgba(0, 0, 0, 0.08)',
+    search: '0 20px 50px rgba(31, 58, 147, 0.15)',
   }
 };
