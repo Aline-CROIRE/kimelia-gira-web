@@ -8,6 +8,15 @@ const Section = styled.section`
   padding: 100px 8%; background: #F1F5F9;
 `;
 
+// Inside src/components/FeaturedGrid.jsx
+const ExploreBtn = styled.button`
+  background: ${props => props.theme.gradients.brand};
+  color: white; padding: 18px 50px; border-radius: 12px;
+  font-family: 'Space Grotesk'; font-weight: 800; text-transform: uppercase;
+  display: block; margin: 70px auto 0;
+  box-shadow: ${props => props.theme.shadows.premium};
+  &:hover { transform: translateY(-3px); box-shadow: ${props => props.theme.shadows.float}; }
+`;
 const TitleBox = styled.div`
   margin-bottom: 50px;
   h2 { font-size: 2.8rem; color: #1F3A93; font-weight: 700; margin-bottom: 10px; }
@@ -22,13 +31,6 @@ const Grid = styled.div`
   display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px;
 `;
 
-const ExploreBtn = styled.button`
-  background: ${props => props.theme.gradients.brand};
-  color: white; padding: 18px 45px; border-radius: 12px;
-  font-family: 'Space Grotesk'; font-weight: 800; text-transform: uppercase;
-  display: block; margin: 60px auto 0; box-shadow: 0 10px 25px rgba(31, 58, 147, 0.2);
-  &:hover { transform: translateY(-3px); filter: brightness(1.1); }
-`;
 
 const FeaturedGrid = () => {
   const [list, setList] = useState([]);
