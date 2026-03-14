@@ -1,23 +1,29 @@
 export const theme = {
   colors: {
     primary: '#1F3A93',
-    secondary: '#4361EE', 
-    accent: '#FFD700',    
+    secondary: '#3B5BDB',
+    accent: '#FFD700',
     white: '#FFFFFF',
-    bgSlate: '#F1F5F9',   
     textDark: '#0F172A',
     textMuted: '#64748B',
+    border: 'rgba(31, 58, 147, 0.08)',
   },
   gradients: {
-    /* THE MASTER SIGNATURE GRADIENT: Sapphire -> Modern Blue -> Gold */
-    brand: 'linear-gradient(135deg, #1F3A93 0%, #4361EE 50%, #FFD700 100%)',
-    /* Premium Gold Foil for small accents */
-    goldMetallic: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
-    /* Dark Overlay for Hero */
-    heroOverlay: 'linear-gradient(180deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)',
+    /* Pure Monochromatic Blue Gradient */
+    brand: 'linear-gradient(135deg, #1F3A93 0%, #3B5BDB 50%, #5C7CFA 100%)',
+    /* Premium dark overlay to ensure background image is subtle but visible */
+    heroOverlay: 'linear-gradient(rgba(10, 15, 30, 0.8), rgba(10, 15, 30, 0.8))',
+    /* Blue Glass */
+    glassPrice: 'linear-gradient(135deg, rgba(31, 58, 147, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)',
   },
   shadows: {
-    premium: '0 15px 35px rgba(31, 58, 147, 0.15)',
-    goldGlow: '0 8px 25px rgba(255, 215, 0, 0.25)',
+    soft: '0 4px 20px rgba(0, 0, 0, 0.03)',
+    premium: '0 20px 40px rgba(0, 0, 0, 0.1)',
+    float: '0 30px 60px rgba(10, 15, 30, 0.25)',
+  },
+  radius: {
+    small: '10px',
+    medium: '18px',
+    large: '28px',
   }
 };

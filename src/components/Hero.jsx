@@ -2,99 +2,103 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Search, MapPin, Building2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import heroImg from '../assets/hero-bg.jpg';
 
 const HeroWrapper = styled.section`
-  margin-top: 80px; height: calc(100vh - 80px); width: 100vw;
-  position: relative; overflow: hidden;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  padding: 0 5%; text-align: center;
-`;
+  margin-top: 80px;
+  height: calc(100vh - 80px);
+  width: 100vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 5%;
+  z-index: 1;
 
-const CinematicBackground = styled.div`
-  position: absolute; inset: 0;
-  /* Double dark overlay: Top-down gradient + subtle blur */
-  background: 
-    linear-gradient(rgba(10, 15, 30, 0.9), rgba(10, 15, 30, 0.4)),
-    radial-gradient(circle at center, transparent 0%, #0A0F1E 100%),
-    url(${heroImg});
-  background-size: cover; background-position: center;
-  z-index: -1;
+  /* The Background Engine */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* This ensures the image is visible but dark enough for "Quiet Luxury" */
+    background: 
+      linear-gradient(rgba(10, 15, 30, 0.85), rgba(10, 15, 30, 0.7)), 
+      url(${heroImg});
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+  }
 `;
 
 const ToggleContainer = styled.div`
-  background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
-  padding: 4px; border-radius: 100px; display: flex; position: relative;
-  width: 190px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  padding: 4px; border-radius: 100px;
+  display: flex; position: relative;
+  width: 180px; margin-bottom: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
-const Option = styled.button`
+const Tab = styled.button`
   flex: 1; padding: 10px; border-radius: 100px;
-  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.7rem; 
-  text-transform: uppercase; color: ${props => props.active ? '#1F3A93' : 'rgba(255,255,255,0.6)'};
-  background: transparent; position: relative; z-index: 2; transition: 0.4s;
-`;
-
-const ActiveSlider = styled(motion.div)`
-  position: absolute; top: 4px; left: 4px;
-  width: calc(50% - 4px); height: calc(100% - 8px);
-  background: ${({ theme }) => theme.gradients.brand}; border-radius: 100px; z-index: 1;
-`;
-
-const MainTitle = styled.h1`
-  font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); 
-  color: white; line-height: 1.1; margin-bottom: 15px;
-  span {
-    background: ${({ theme }) => theme.gradients.brand};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+  font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.65rem;
+  text-transform: uppercase; color: ${props => props.active ? '#1F3A93' : 'rgba(255,255,255,0.5)'};
+  background: transparent; position: relative; z-index: 2;
 `;
 
 const SearchEngine = styled(motion.div)`
-  background: white; border-radius: 16px; padding: 6px;
-  display: flex; align-items: center; width: 100%; max-width: 800px; 
+  background: white; border-radius: 16px; padding: 8px;
+  display: flex; align-items: center; width: 100%; max-width: 780px;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
-  @media (max-width: 900px) { flex-direction: column; border-radius: 20px; padding: 15px; }
-`;
-
-const InputField = styled.div`
-  display: flex; align-items: center; flex: 1; padding: 0 20px; border-right: 1px solid #f1f5f9;
-  &:last-of-type { border-right: none; }
-  input, select { 
-    border: none; outline: none; padding: 12px 5px; width: 100%; 
-    font-size: 0.85rem; font-weight: 600; color: #1F3A93; background: transparent; 
-    &::placeholder { color: #94a3b8; }
-  }
-`;
-
-const SearchBtn = styled(motion.button)`
-  background: ${({ theme }) => theme.gradients.brand};
-  width: 50px; height: 50px; border-radius: 12px; display: flex; 
-  justify-content: center; align-items: center; color: white;
-  @media (max-width: 900px) { width: 100%; margin-top: 10px; height: 45px; }
+  @media (max-width: 900px) { flex-direction: column; border-radius: 20px; }
 `;
 
 const Hero = () => {
-  const [mode, setMode] = useState('buy');
+  const [type, setType] = useState('buy');
+  const navigate = useNavigate();
 
   return (
     <HeroWrapper>
-      <CinematicBackground />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
         <ToggleContainer>
-          <ActiveSlider animate={{ x: mode === 'buy' ? 0 : '100%' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} />
-          <Option active={mode === 'buy'} onClick={() => setMode('buy')}>Buy</Option>
-          <Option active={mode === 'rent'} onClick={() => setMode('rent')}>Rent</Option>
+          <motion.div 
+            animate={{ x: type === 'buy' ? 0 : '100%' }} 
+            style={{ position: 'absolute', top: 4, left: 4, width: 'calc(50% - 4px)', height: 'calc(100% - 8px)', background: 'white', borderRadius: '100px', zIndex: 1 }} 
+          />
+          <Tab active={type === 'buy'} onClick={() => setType('buy')}>Buy</Tab>
+          <Tab active={type === 'rent'} onClick={() => setType('rent')}>Rent</Tab>
         </ToggleContainer>
-        <MainTitle>Find Your <span>Premium</span> <br/> Sanctuary In Rwanda</MainTitle>
-        <p style={{color: 'rgba(255,255,255,0.5)', fontSize: '1rem', marginBottom:'40px', fontWeight: 500}}>Verified elite listings powered by Kimelia AI.</p>
+
+        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', color: 'white', fontWeight: 700, lineHeight: 1.2, marginBottom: '15px' }}>
+          Discover Your <span style={{ background: 'linear-gradient(135deg, #FFD700, #B8860B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Elite</span> Sanctuary
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'Inter', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '2px', marginBottom: '45px' }}>
+          AI-VERIFIED LUXURY REAL ESTATE
+        </p>
       </motion.div>
 
-      <SearchEngine initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
-        <InputField><MapPin size={18} color="#1F3A93"/><input placeholder="Location..." /></InputField>
-        <InputField><Building2 size={18} color="#1F3A93"/><select><option>Modern Villa</option><option>Land</option></select></InputField>
-        <SearchBtn whileHover={{ scale: 1.05 }}><Search size={20}/></SearchBtn>
+      <SearchEngine initial={{ scale: 0.98, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.3 }}>
+        <div style={{ flex: 1, display: 'flex', padding: '0 20px', gap: '10px', alignItems: 'center' }}>
+          <MapPin color="#1F3A93" size={18} />
+          <input placeholder="Location..." style={{ border: 'none', outline: 'none', width: '100%', fontWeight: 700, fontSize: '0.85rem', color: '#1F3A93' }} />
+        </div>
+        <div style={{ flex: 1, display: 'flex', padding: '0 20px', gap: '10px', alignItems: 'center', borderLeft: '1px solid #f1f5f9' }}>
+          <Building2 color="#1F3A93" size={18} />
+          <select style={{ border: 'none', outline: 'none', width: '100%', fontWeight: 700, fontSize: '0.85rem', color: '#1F3A93' }}>
+             <option>Modern Villa</option>
+             <option>Penthouse</option>
+             <option>Land</option>
+          </select>
+        </div>
+        <button 
+          onClick={() => navigate('/properties')}
+          style={{ background: '#1F3A93', color: 'white', width: '52px', height: '52px', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Search size={22} />
+        </button>
       </SearchEngine>
     </HeroWrapper>
   );
