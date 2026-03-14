@@ -7,20 +7,21 @@ import { User, Mail, Lock, UserCheck, Home, Briefcase } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import API from '../services/api';
 import logoImg from '../assets/logo.png';
+import heroImg from '../assets/hero-bg.jpg';
 
-const AuthContainer = styled.div`min-height: 100vh; width: 100vw; display: flex; flex-direction: column; background: #F8FAFC; overflow: hidden;`;
-const AuthNav = styled.nav`height: 90px; padding: 0 8%; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0;`;
-const FormWrapper = styled.div`flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px;`;
-const Card = styled(motion.div)`width: 100%; max-width: 550px; background: white; padding: 50px; border-radius: 30px; box-shadow: 0 20px 50px rgba(31, 58, 147, 0.08);`;
+const Page = styled.div` min-height: 100vh; display: grid; grid-template-columns: 1fr 1.1fr; background: white; @media (max-width: 1024px) { grid-template-columns: 1fr; } `;
+const VisualSide = styled.div` position: relative; background: linear-gradient(rgba(10, 15, 30, 0.8), rgba(10, 15, 30, 0.95)), url(${heroImg}); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; padding: 80px; color: white; @media (max-width: 1024px) { display: none; } `;
+const FormSide = styled.div` display: flex; flex-direction: column; justify-content: center; padding: 60px 10%; background: #F8FAFC; `;
 
-const RoleGrid = styled.div`display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;`;
+const RoleGrid = styled.div` display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; `;
+
 const RoleCard = styled.div`
-  padding: 15px; border-radius: 12px; border: 2px solid ${props => props.active ? '#FFD700' : '#F1F5F9'};
-  background: ${props => props.active ? '#FFFDF5' : 'white'};
-  cursor: pointer; text-align: center; transition: 0.3s;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  svg { color: #1F3A93; }
-  span { font-size: 0.75rem; font-weight: 800; color: #1F3A93; }
+  padding: 20px 10px; border-radius: 16px; transition: 0.3s; cursor: pointer; text-align: center;
+  background: ${props => props.active ? 'white' : 'transparent'};
+  border: 2px solid ${props => props.active ? '#FFD700' : '#E2E8F0'};
+  box-shadow: ${props => props.active ? '0 10px 25px rgba(0,0,0,0.05)' : 'none'};
+  svg { color: ${props => props.active ? '#1F3A93' : '#94A3B8'}; margin-bottom: 8px; }
+  span { display: block; font-size: 0.7rem; font-weight: 800; color: #1F3A93; font-family: 'Space Grotesk'; }
 `;
 
 const Register = () => {
@@ -39,39 +40,51 @@ const Register = () => {
   };
 
   return (
-    <AuthContainer>
-      <AuthNav>
-        <Link to="/"><img src={logoImg} alt="Logo" style={{height: '45px'}}/></Link>
-        <Link to="/login" style={{color: '#1F3A93', fontWeight: 800, textDecoration: 'none'}}>{t('nav_login')}</Link>
-      </AuthNav>
-      <FormWrapper>
-        <Card initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h2 style={{color: '#1F3A93', fontSize: '2rem', marginBottom: '10px'}}>{t('auth_create_account')}</h2>
+    <Page>
+      <VisualSide>
+        <img src={logoImg} alt="Logo" style={{ height: '50px', filter: 'brightness(0) invert(1)', marginBottom: '40px' }} />
+        <h2 style={{ fontFamily: 'Space Grotesk', fontSize: '3.5rem', lineHeight: '1.1', marginBottom: '20px' }}>Join the <span style={{color: '#FFD700'}}>Elite</span> <br/> Marketplace</h2>
+        <p style={{ fontSize: '1.2rem', opacity: 0.6, maxWidth: '450px' }}>The destination for Rwanda's most significant real estate transactions.</p>
+      </VisualSide>
+
+      <FormSide>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h1 style={{ fontFamily: 'Space Grotesk', fontSize: '2.5rem', color: '#1F3A93', marginBottom: '35px' }}>{t('auth_create_account')}</h1>
           
-          <label style={{display:'block', marginBottom:'15px', fontWeight:800, color:'#1F3A93'}}>I am a...</label>
+          <label style={{ display: 'block', marginBottom: '15px', fontWeight: 800, color: '#1F3A93', fontSize: '0.8rem', fontFamily: 'Space Grotesk' }}>CHOOSE YOUR PATH</label>
           <RoleGrid>
             <RoleCard active={formData.role === 'buyer'} onClick={() => setFormData({...formData, role: 'buyer'})}>
-              <UserCheck size={20}/><span>{t('auth_role_buyer')}</span>
+              <UserCheck size={24}/><span>BUYER</span>
             </RoleCard>
             <RoleCard active={formData.role === 'owner'} onClick={() => setFormData({...formData, role: 'owner'})}>
-              <Home size={20}/><span>{t('auth_role_owner')}</span>
+              <Home size={24}/><span>OWNER</span>
             </RoleCard>
             <RoleCard active={formData.role === 'broker'} onClick={() => setFormData({...formData, role: 'broker'})}>
-              <Briefcase size={20}/><span>{t('auth_role_broker')}</span>
+              <Briefcase size={24}/><span>BROKER</span>
             </RoleCard>
           </RoleGrid>
 
           <form onSubmit={handleRegister}>
-            <input style={{width:'100%', padding:'15px', marginBottom:'15px', borderRadius:'10px', border:'1px solid #EEE'}} placeholder={t('auth_name')} onChange={e => setFormData({...formData, name: e.target.value})}/>
-            <input style={{width:'100%', padding:'15px', marginBottom:'15px', borderRadius:'10px', border:'1px solid #EEE'}} placeholder={t('auth_email')} onChange={e => setFormData({...formData, email: e.target.value})}/>
-            <input type="password" style={{width:'100%', padding:'15px', marginBottom:'20px', borderRadius:'10px', border:'1px solid #EEE'}} placeholder={t('auth_password')} onChange={e => setFormData({...formData, password: e.target.value})}/>
-            <button style={{width:'100%', background:'linear-gradient(135deg, #1F3A93, #FFD700)', color:'white', padding:'18px', borderRadius:'12px', border:'none', fontWeight:800, cursor:'pointer'}}>
+            <div style={{ marginBottom: '15px' }}>
+                <input style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1.5px solid #E2E8F0', outline: 'none' }} placeholder={t('auth_name')} onChange={e => setFormData({...formData, name: e.target.value})}/>
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+                <input style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1.5px solid #E2E8F0', outline: 'none' }} placeholder={t('auth_email')} onChange={e => setFormData({...formData, email: e.target.value})}/>
+            </div>
+            <div style={{ marginBottom: '25px' }}>
+                <input type="password" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1.5px solid #E2E8F0', outline: 'none' }} placeholder={t('auth_password')} onChange={e => setFormData({...formData, password: e.target.value})}/>
+            </div>
+            <button style={{ width: '100%', background: 'linear-gradient(135deg, #1F3A93, #3B5BDB)', color: 'white', padding: '18px', borderRadius: '12px', fontWeight: 800, border: 'none', cursor: 'pointer', fontFamily: 'Space Grotesk', textTransform: 'uppercase' }}>
               {t('nav_register')}
             </button>
           </form>
-        </Card>
-      </FormWrapper>
-    </AuthContainer>
+
+          <p style={{ marginTop: '30px', textAlign: 'center', color: '#64748B', fontWeight: 600 }}>
+            {t('auth_have_account')} <Link to="/login" style={{ color: '#1F3A93', fontWeight: 800 }}>Login</Link>
+          </p>
+        </motion.div>
+      </FormSide>
+    </Page>
   );
 };
 
