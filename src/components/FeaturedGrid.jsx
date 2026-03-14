@@ -1,30 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import { getProperties } from '../services/propertyService';
 import PropertyCard from './PropertyCard';
+import { useNavigate } from 'react-router-dom';
 
 const Section = styled.section`
-  padding: 100px 8%; 
-  background: #F1F5F9; /* This is the "In-Between" brightness you requested */
+  padding: 100px 8%; background: #F1F5F9;
 `;
 
-const Header = styled.div`
-  margin-bottom: 60px;
+const TitleBox = styled.div`
+  margin-bottom: 50px;
   h2 { font-size: 2.8rem; color: #1F3A93; font-weight: 700; margin-bottom: 10px; }
   span { 
-    background: ${({ theme }) => theme.gradients.brand};
+    background: ${props => props.theme.gradients.brand};
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 `;
 
 const Grid = styled.div`
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 40px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px;
+`;
+
+const ExploreBtn = styled.button`
+  background: ${props => props.theme.gradients.brand};
+  color: white; padding: 18px 45px; border-radius: 12px;
+  font-family: 'Space Grotesk'; font-weight: 800; text-transform: uppercase;
+  display: block; margin: 60px auto 0; box-shadow: 0 10px 25px rgba(31, 58, 147, 0.2);
+  &:hover { transform: translateY(-3px); filter: brightness(1.1); }
 `;
 
 const FeaturedGrid = () => {
   const [list, setList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getProperties().then(data => setList(data.slice(0, 6)));
@@ -32,15 +40,14 @@ const FeaturedGrid = () => {
 
   return (
     <Section>
-      <Header>
-        <motion.h2 initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}>
-          Elite <span>Portfolio</span>
-        </motion.h2>
-        <p style={{color: '#64748B', fontWeight: 500}}>Handpicked selections by our market AI.</p>
-      </Header>
+      <TitleBox>
+        <h2>Elite <span>Portfolio</span></h2>
+        <p style={{ color: '#64748B', fontWeight: 600 }}>Curated residential and commercial assets.</p>
+      </TitleBox>
       <Grid>
         {list.map(p => <PropertyCard key={p._id} data={p} />)}
       </Grid>
+      <ExploreBtn onClick={() => navigate('/properties')}>View Entire Catalog</ExploreBtn>
     </Section>
   );
 };
