@@ -4,76 +4,35 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../services/api';
 import PropertyCard from '../PropertyCard';
-import { Plus, Loader2, Home, LayoutGrid } from 'lucide-react';
+import { Plus, Loader2, Home, Edit3, Trash2, AlertTriangle } from 'lucide-react';
+import { deleteProperty } from '../../services/propertyService';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-`;
+const Container = styled.div` display: flex; flex-direction: column; gap: 40px; `;
 
 const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
   @media (max-width: 600px) { flex-direction: column; align-items: flex-start; gap: 20px; }
 `;
 
-const TitleBox = styled.div`
-  h2 { font-family: 'Space Grotesk'; font-size: 2.2rem; color: #1F3A93; font-weight: 700; margin: 0; }
-  p { color: #64748B; font-weight: 500; font-size: 0.9rem; margin-top: 5px; }
+const ManageGrid = styled.div`
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px;
 `;
 
-const AddListingBtn = styled.button`
-  background: ${({ theme }) => theme.gradients.brand};
-  color: white;
-  padding: 14px 28px;
-  border-radius: 12px;
-  font-family: 'Space Grotesk';
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: ${({ theme }) => theme.shadows.premium};
-  border: none;
-  cursor: pointer;
-  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-    box-shadow: 0 10px 25px rgba(31, 58, 147, 0.25);
+const CardWrapper = styled.div`
+  position: relative;
+  .actions {
+    position: absolute; bottom: 120px; right: 20px; z-index: 20;
+    display: flex; gap: 10px; opacity: 0; transition: 0.3s;
   }
+  &:hover .actions { opacity: 1; transform: translateY(-5px); }
 `;
 
-const EmptyState = styled.div`
-  background: white;
-  padding: 80px 40px;
-  border-radius: 30px;
-  text-align: center;
-  border: 2px dashed #E2E8F0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-
-  .icon-bg {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: #F8FAFC; display: flex; justify-content: center; align-items: center;
-    color: #CBD5E1;
-  }
-
-  h3 { color: #1F3A93; font-family: 'Space Grotesk'; font-size: 1.4rem; }
-  p { color: #64748B; max-width: 300px; line-height: 1.5; }
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
+const IconButton = styled.button`
+  width: 45px; height: 45px; border-radius: 12px; display: flex; 
+  justify-content: center; align-items: center; border: none; cursor: pointer;
+  background: ${props => props.danger ? '#EF4444' : '#0B397F'};
+  color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  &:hover { transform: scale(1.1); filter: brightness(1.2); }
 `;
 
 const MyListings = () => {
@@ -82,69 +41,63 @@ const MyListings = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchMyData = async () => {
+  const fetchMyData = async () => {
+    try {
+      const res = await API.get('/properties');
+      const mine = res.data.data.filter(p => {
+          const ownerId = p.owner?._id || p.owner;
+          return String(ownerId) === String(user?._id || user?.id);
+      });
+      setListings(mine);
+    } catch (err) { console.error("Fetch failed"); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { if (user) fetchMyData(); }, [user]);
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure? This asset will be permanently removed from the market.")) {
       try {
-        const res = await API.get('/properties');
-        const allProps = res.data.data;
-        
-        // Exact ID matching logic
-        const myStuff = allProps.filter(p => {
-            const ownerId = p.owner?._id || p.owner;
-            const currentUserId = user?._id || user?.id;
-            return String(ownerId) === String(currentUserId);
-        });
+        await deleteProperty(id);
+        fetchMyData(); // Refresh list
+      } catch (err) { alert("Delete failed."); }
+    }
+  };
 
-        setListings(myStuff);
-      } catch (err) {
-        console.error("Fetch failed in Dashboard");
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (user) fetchMyData();
-  }, [user]);
-
-  if (loading) return (
-    <div style={{ padding: '100px', textAlign: 'center', color: '#1F3A93' }}>
-      <Loader2 className="animate-spin" size={40} />
-      <p style={{ marginTop: '20px', fontFamily: 'Space Grotesk', fontWeight: 700, opacity: 0.6 }}>Securing Portfolio Data...</p>
-    </div>
-  );
+  if (loading) return <div style={{textAlign:'center', padding:'100px'}}><Loader2 className="animate-spin" color="#0B397F" size={40}/></div>;
 
   return (
     <Container>
       <Header>
-        <TitleBox>
-          <h2>My Portfolio</h2>
-          <p>Manage and track your listed architectural assets.</p>
-        </TitleBox>
-        <AddListingBtn onClick={() => navigate('/list-property')}>
-          <Plus size={18} />
-          List New Asset
-        </AddListingBtn>
+        <div>
+            <h2 style={{fontFamily:'Space Grotesk', fontSize:'2.2rem', color:'#0B397F'}}>My Portfolio</h2>
+            <p style={{color:'#64748B', fontWeight:500}}>Managing {listings.length} active listings</p>
+        </div>
+        <button 
+          onClick={() => navigate('/list-property')}
+          style={{ background: 'linear-gradient(135deg, #0B397F 0%, #F5A623 100%)', color: 'white', padding: '14px 28px', borderRadius: '12px', fontWeight: 800, border: 'none', cursor: 'pointer', fontFamily: 'Space Grotesk', display:'flex', alignItems:'center', gap:'10px' }}
+        >
+          <Plus size={18} /> LIST NEW ASSET
+        </button>
       </Header>
 
       {listings.length === 0 ? (
-        <EmptyState>
-          <div className="icon-bg">
-            <Home size={40} />
-          </div>
-          <div>
-            <h3>Your Portfolio is Empty</h3>
-            <p>Ready to showcase your first property to our network of elite investors?</p>
-          </div>
-          <AddListingBtn onClick={() => navigate('/list-property')}>
-            <Plus size={18} />
-            Add Your First Property
-          </AddListingBtn>
-        </EmptyState>
+        <div style={{background:'white', padding:'80px', borderRadius:'30px', textAlign:'center', border:'2px dashed #E2E8F0'}}>
+            <Home size={40} color="#CBD5E1" style={{marginBottom:'15px'}}/>
+            <p style={{fontWeight:600, color:'#64748B'}}>No properties found in your elite portfolio.</p>
+        </div>
       ) : (
-        <Grid>
+        <ManageGrid>
           {listings.map(p => (
-            <PropertyCard key={p._id} data={p} />
+            <CardWrapper key={p._id}>
+                <PropertyCard data={p} />
+                <div className="actions">
+                    <IconButton onClick={() => navigate(`/edit-property/${p._id}`)}><Edit3 size={18}/></IconButton>
+                    <IconButton danger onClick={() => handleDelete(p._id)}><Trash2 size={18}/></IconButton>
+                </div>
+            </CardWrapper>
           ))}
-        </Grid>
+        </ManageGrid>
       )}
     </Container>
   );

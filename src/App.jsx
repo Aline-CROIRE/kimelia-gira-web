@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
+import EditProperty from './pages/EditProperty';
 
 // Global Configuration
 import { theme } from './theme/Theme';
@@ -47,6 +48,7 @@ const AppContent = () => {
           <Route path="/" element={<Home />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/properties/:id" element={<PropertyDetail />} />
+          <Route path="/edit-property/:id" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
           <Route path="/valuation" element={<Valuation />} />
           
           {/* Unified Authentication (Login & Register) */}
