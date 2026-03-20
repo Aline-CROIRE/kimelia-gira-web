@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: 'https://kimelia-gira-api.onrender.com/api/v1',
+    baseURL: 'http://localhost:5000/api/v1',
 });
 
 // Automatically add the JWT token to every request if the user is logged in

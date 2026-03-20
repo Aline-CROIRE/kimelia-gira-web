@@ -59,7 +59,30 @@ const resources = {
       val_subtitle: "Get an instant market estimate powered by Kimelia AI.",
       val_btn: "Calculate Estimate",
       val_result: "Estimated Market Value",
-      val_confidence: "AI Confidence Score"
+      val_confidence: "AI Confidence Score",
+
+      list_title: "List Your Property",
+list_subtitle: "Submit your asset to our elite AI-verified catalog.",
+list_basic_info: "Basic Information",
+list_prop_title: "Listing Title",
+list_desc: "Description (Enter in any language, AI will translate)",
+list_price: "Price (RWF)",
+list_location: "Address / Location",
+list_features: "Property Features",
+list_images: "Property Images",
+list_upload_btn: "Upload High-Res Photos",
+list_submit: "Publish Listing",
+list_title: "List Your Asset",
+list_subtitle: "Submit your property to our AI-verified elite catalog.",
+list_basic: "Asset Details",
+list_name: "Property Title",
+list_price: "Price (RWF)",
+list_location: "Address (District, Sector)",
+list_desc: "Description (Enter in any language)",
+list_upload: "Upload High-Resolution Photos",
+list_publish: "Publish to Marketplace",
+list_processing: "AI is translating & optimizing...",
+
     }
   },
   rw: {

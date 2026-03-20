@@ -2,18 +2,38 @@ import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
+/**
+ * PROTECTED ROUTE (User Level)
+ * Redirects to Login if the user is not authenticated.
+ */
+export const ProtectedRoute = ({ children }) => {
     const { user, loading } = useContext(AuthContext);
 
-    // Show nothing while we check if the user is logged in
+    // Don't redirect while the auth state is still being determined
     if (loading) return null; 
 
-    // If no user is found, redirect to Login page
     if (!user) {
         return <Navigate to="/login" />;
     }
 
-    // If user exists, show the protected content (e.g., Dashboard)
+    return children;
+};
+
+/**
+ * ADMIN ROUTE (Privileged Level)
+ * Only allows users with the 'admin' role. Redirects others to Home.
+ */
+export const AdminRoute = ({ children }) => {
+    const { user, loading } = useContext(AuthContext);
+
+    if (loading) return null;
+
+    if (!user || user.role !== 'admin') {
+        // Log unauthorized attempt for security monitoring
+        console.warn("Unauthorized access attempt to Admin Console");
+        return <Navigate to="/" />;
+    }
+
     return children;
 };
 

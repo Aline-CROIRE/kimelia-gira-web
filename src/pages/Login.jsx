@@ -94,10 +94,10 @@ const Login = () => {
   return (
     <Page>
       <VisualSide>
-        <BrandBadge><img src={logoImg} alt="Logo"/></BrandBadge>
+        <BrandBadge><img src={logoImg} alt="Logo" /></BrandBadge>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h2 style={{ fontFamily: 'Space Grotesk', fontSize: '3rem', fontWeight: 700, marginBottom: '15px' }}>Welcome to the <br/> <span style={{color: '#FFD700'}}>Inner Circle</span></h2>
-            <p style={{ fontSize: '1.1rem', opacity: 0.7, maxWidth: '400px', lineHeight: '1.6' }}>Access Rwanda's most exclusive real estate portfolio and AI-driven market insights.</p>
+          <h2 style={{ fontFamily: 'Space Grotesk', fontSize: '3rem', fontWeight: 700, marginBottom: '15px' }}>Welcome to the <br /> <span style={{ color: '#FFD700' }}>Inner Circle</span></h2>
+          <p style={{ fontSize: '1.1rem', opacity: 0.7, maxWidth: '400px', lineHeight: '1.6' }}>Access Rwanda's most exclusive real estate portfolio and AI-driven market insights.</p>
         </motion.div>
       </VisualSide>
 
@@ -106,7 +106,7 @@ const Login = () => {
           <h1 style={{ fontFamily: 'Space Grotesk', fontSize: '2.2rem', marginBottom: '8px' }}>{t('auth_welcome_back')}</h1>
           <p style={{ color: '#64748B', marginBottom: '35px', fontWeight: 500 }}>Enter your credentials to continue.</p>
 
-          <GoogleBtn onClick={() => window.location.href = 'https://kimelia-gira-api.onrender.com/api/v1/auth/google'}>
+          <GoogleBtn onClick={() => window.location.href = 'http://localhost:5000/api/v1/auth/google'}>
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" />
             {t('auth_google')}
           </GoogleBtn>
@@ -116,14 +116,14 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <InputGroup>
               <label>{t('auth_email')}</label>
-              <div className="box"><Mail size={18}/><input type="email" required onChange={e => setFormData({...formData, email: e.target.value})}/></div>
+              <div className="box"><Mail size={18} /><input type="email" required onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
             </InputGroup>
             <InputGroup>
               <label>{t('auth_password')}</label>
-              <div className="box"><Lock size={18}/><input type="password" required onChange={e => setFormData({...formData, password: e.target.value})}/></div>
+              <div className="box"><Lock size={18} /><input type="password" required onChange={e => setFormData({ ...formData, password: e.target.value })} /></div>
             </InputGroup>
             <SubmitBtn whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              {t('nav_login')} <ArrowRight size={20} style={{marginLeft:'8px'}}/>
+              {t('nav_login')} <ArrowRight size={20} style={{ marginLeft: '8px' }} />
             </SubmitBtn>
           </form>
 

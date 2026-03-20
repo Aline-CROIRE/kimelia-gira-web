@@ -3,54 +3,57 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { ThemeProvider } from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
 
-// Global DNA
+// Global Configuration
 import { theme } from './theme/Theme';
 import { GlobalStyle } from './theme/GlobalStyles';
 import { AuthProvider } from './context/AuthContext';
 import './translations/i18n';
 
-// Components
+// Core UI Components
 import Navbar from './components/Navbar';
 import SplashScreen from './components/SplashScreen';
-import ProtectedRoute from './components/ProtectedRoute';
+import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 
-// Pages
+// Page Components
 import Home from './pages/Home';
 import Valuation from './pages/Valuation';
-import Auth from './pages/Auth'; // Handles both Login and Register
+import Auth from './pages/Auth'; 
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 import Dashboard from './pages/Dashboard';
+import AddProperty from './pages/AddProperty';
+import AdminDashboard from './pages/AdminDashboard';
 
 /**
- * LAYOUT ENGINE
- * Handles conditional visibility of components like Navbar
+ * APP CONTENT WRAPPER
+ * Controls the visibility of global UI elements like the Navbar.
  */
 const AppContent = () => {
   const location = useLocation();
   
-  // Define routes where the main Navbar should be hidden
-  const hideNavbar = location.pathname === '/login' || location.pathname === '/register';
+  // High-End Logic: Hide Navbar on Auth pages (Login/Register) for maximum focus
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {/* Show Navbar only if we are not on an Auth page */}
+      {!isAuthPage && <Navbar />}
       
-      {/* mode="wait" ensures page exits before the next one enters */}
+      {/* AnimatePresence allows for cinematic page-to-page fade transitions */}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
+          
+          {/* Public Discovery Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/properties/:id" element={<PropertyDetail />} />
           <Route path="/valuation" element={<Valuation />} />
           
-          {/* AUTHENTICATION (Unified Page) */}
+          {/* Unified Authentication (Login & Register) */}
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
           
-          {/* PROPERTY DISCOVERY */}
-          <Route path="/properties" element={<Properties />} />
-          <Route path="/properties/:id" element={<PropertyDetail />} />
-          
-          {/* SECURE USER DASHBOARD */}
+          {/* Secure User Portfolio Routes */}
           <Route 
             path="/dashboard" 
             element={
@@ -59,19 +62,48 @@ const AppContent = () => {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/list-property" 
+            element={
+              <ProtectedRoute>
+                <AddProperty />
+              </ProtectedRoute>
+            } 
+          />
 
-          <Route path="*" element={<div style={{padding:'200px 0', textAlign:'center'}}><h1>404 | Page Not Found</h1></div>} />
+          {/* Secure Admin Control Center */}
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            } 
+          />
+
+          {/* Global 404 Fallback */}
+          <Route path="*" element={
+            <div style={{ padding: '200px 8%', textAlign: 'center', background: '#F1F5F9', minHeight: '100vh' }}>
+              <h1 style={{ fontFamily: 'Space Grotesk', color: '#1F3A93', fontSize: '3rem' }}>404</h1>
+              <p style={{ color: '#64748B', fontWeight: 600 }}>The sanctuary you are looking for does not exist.</p>
+              <a href="/" style={{ color: '#3B5BDB', fontWeight: 800, marginTop: '20px', display: 'inline-block' }}>RETURN HOME</a>
+            </div>
+          } />
+          
         </Routes>
       </AnimatePresence>
     </>
   );
 };
 
+/**
+ * MAIN APP ENTRY POINT
+ */
 function App() {
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    // Show cinematic splash for exactly 3 seconds
+    // Show cinematic splash for exactly 3 seconds to establish the elite brand
     const timer = setTimeout(() => setIsInitializing(false), 3000);
     return () => clearTimeout(timer);
   }, []);
@@ -79,6 +111,7 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider theme={theme}>
+        {/* Inject Master CSS Reset and Pro Typography */}
         <GlobalStyle />
         
         {isInitializing ? (
