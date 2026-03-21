@@ -7,20 +7,21 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const checkUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const res = await API.get('/auth/me');
-                    setUser(res.data.data);
-                } catch (err) {
-                    localStorage.removeItem('token');
-                    setUser(null);
-                }
+    const checkUser = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const res = await API.get('/auth/me');
+                setUser(res.data.data);
+            } catch (err) {
+                localStorage.removeItem('token');
+                setUser(null);
             }
-            setLoading(false);
-        };
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
         checkUser();
     }, []);
 
@@ -35,8 +36,11 @@ export const AuthProvider = ({ children }) => {
         window.location.href = '/';
     };
 
+    // Helper to refresh user data (used after favoriting)
+    const refreshUser = () => checkUser();
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

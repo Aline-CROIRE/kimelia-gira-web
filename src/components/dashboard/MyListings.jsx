@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../services/api';
 import PropertyCard from '../PropertyCard';
-import { Plus, Loader2, Home, Edit3, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Loader2, Home, Edit3, Trash2 } from 'lucide-react';
 import { deleteProperty } from '../../services/propertyService';
 
 const Container = styled.div` display: flex; flex-direction: column; gap: 40px; `;
@@ -30,7 +30,7 @@ const CardWrapper = styled.div`
 const IconButton = styled.button`
   width: 45px; height: 45px; border-radius: 12px; display: flex; 
   justify-content: center; align-items: center; border: none; cursor: pointer;
-  background: ${props => props.danger ? '#EF4444' : '#0B397F'};
+  background: ${props => props.$danger ? '#EF4444' : '#0B397F'};
   color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
   &:hover { transform: scale(1.1); filter: brightness(1.2); }
 `;
@@ -44,23 +44,24 @@ const MyListings = () => {
   const fetchMyData = async () => {
     try {
       const res = await API.get('/properties');
-      const mine = res.data.data.filter(p => {
+      const allProps = res.data.data;
+      const myStuff = allProps.filter(p => {
           const ownerId = p.owner?._id || p.owner;
           return String(ownerId) === String(user?._id || user?.id);
       });
-      setListings(mine);
-    } catch (err) { console.error("Fetch failed"); }
+      setListings(myStuff);
+    } catch (err) { console.error("Portfolio Fetch Failed"); }
     finally { setLoading(false); }
   };
 
   useEffect(() => { if (user) fetchMyData(); }, [user]);
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure? This asset will be permanently removed from the market.")) {
+    if (window.confirm("Permanent Action: This asset will be removed from the market. Proceed?")) {
       try {
         await deleteProperty(id);
-        fetchMyData(); // Refresh list
-      } catch (err) { alert("Delete failed."); }
+        await fetchMyData(); // Instant Refresh
+      } catch (err) { alert("Action Denied"); }
     }
   };
 
@@ -71,7 +72,7 @@ const MyListings = () => {
       <Header>
         <div>
             <h2 style={{fontFamily:'Space Grotesk', fontSize:'2.2rem', color:'#0B397F'}}>My Portfolio</h2>
-            <p style={{color:'#64748B', fontWeight:500}}>Managing {listings.length} active listings</p>
+            <p style={{color:'#64748B', fontWeight:500}}>Managing {listings.length} live sanctuaries</p>
         </div>
         <button 
           onClick={() => navigate('/list-property')}
@@ -84,7 +85,7 @@ const MyListings = () => {
       {listings.length === 0 ? (
         <div style={{background:'white', padding:'80px', borderRadius:'30px', textAlign:'center', border:'2px dashed #E2E8F0'}}>
             <Home size={40} color="#CBD5E1" style={{marginBottom:'15px'}}/>
-            <p style={{fontWeight:600, color:'#64748B'}}>No properties found in your elite portfolio.</p>
+            <p style={{fontWeight:600, color:'#64748B'}}>No active listings found in your account.</p>
         </div>
       ) : (
         <ManageGrid>
@@ -93,7 +94,7 @@ const MyListings = () => {
                 <PropertyCard data={p} />
                 <div className="actions">
                     <IconButton onClick={() => navigate(`/edit-property/${p._id}`)}><Edit3 size={18}/></IconButton>
-                    <IconButton danger onClick={() => handleDelete(p._id)}><Trash2 size={18}/></IconButton>
+                    <IconButton $danger onClick={() => handleDelete(p._id)}><Trash2 size={18}/></IconButton>
                 </div>
             </CardWrapper>
           ))}
