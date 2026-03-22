@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, CheckCircle, Phone, Loader2 } from 'lucide-react';
-import API from '../services/api';
+import { X, Send, CheckCircle, Loader2, Phone } from 'lucide-react';
+import { createInquiry } from '../services/propertyService';
 import { AuthContext } from '../context/AuthContext';
 
 const Overlay = styled(motion.div)`
@@ -12,14 +12,42 @@ const Overlay = styled(motion.div)`
 `;
 
 const ModalCard = styled(motion.div)`
-  background: white; width: 100%; max-width: 500px;
+  background: white; width: 100%; max-width: 480px;
   border-radius: 35px; overflow: hidden; position: relative;
   box-shadow: 0 40px 100px rgba(0,0,0,0.5);
 `;
 
+const FormPadding = styled.div` padding: 45px; `;
+
+const InputGroup = styled.div`
+  margin-bottom: 20px;
+  label { display: block; margin-bottom: 8px; font-weight: 800; color: #0B397F; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-family: 'Space Grotesk'; }
+  .field {
+    position: relative;
+    input, textarea {
+        width: 100%; padding: 16px 16px 16px 45px; border-radius: 12px; border: 1.5px solid #F1F5F9;
+        background: #F8FAFC; font-family: 'Inter'; font-size: 0.95rem; outline: none; transition: 0.3s;
+        &:focus { border-color: #F5A623; background: white; }
+    }
+    textarea { padding: 16px; resize: none; }
+    svg { position: absolute; left: 15px; top: 18px; color: #0B397F; opacity: 0.4; }
+  }
+`;
+
+const SubmitBtn = styled.button`
+  width: 100%; padding: 20px; border-radius: 16px; border: none;
+  background: ${({ theme }) => theme.gradients.brand};
+  color: white; font-family: 'Space Grotesk'; font-weight: 800;
+  text-transform: uppercase; cursor: pointer; display: flex;
+  justify-content: center; align-items: center; gap: 12px;
+  box-shadow: 0 10px 25px rgba(11, 57, 127, 0.2);
+  &:disabled { opacity: 0.7; cursor: not-allowed; }
+`;
+
 const InquiryModal = ({ property, onClose }) => {
   const { user } = useContext(AuthContext);
-  const [formData, setFormData] = useState({ phone: '', message: `I am interested in ${property.title.en}.` });
+  const [phone, setPhone] = useState('');
+  const [message, setMessage] = useState(`Greetings, I am interested in exploring this sanctuary.`);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -27,55 +55,53 @@ const InquiryModal = ({ property, onClose }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await API.post(`/interactions/inquiry/send/${property._id}`, formData);
-      setSent(true);
-      setTimeout(onClose, 3000);
-    } catch (err) { alert("Failed to transmit lead."); }
-    finally { setLoading(false); }
+      const res = await createInquiry(property._id, message, phone);
+      if (res.data.success) {
+        setSent(true);
+        setTimeout(onClose, 3000);
+      }
+    } catch (err) {
+      alert("Submission Error: Verify all fields.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Overlay initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <ModalCard initial={{ y: 50 }} animate={{ y: 0 }}>
-        <button onClick={onClose} style={{ position:'absolute', top:20, right:20, background:'none', border:'none', cursor:'pointer' }}><X color="#0B397F"/></button>
+      <ModalCard initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
+        <button onClick={onClose} style={{ position:'absolute', top:25, right:25, background:'none', border:'none', cursor:'pointer' }}><X size={22} color="#0B397F"/></button>
         
         <AnimatePresence mode="wait">
           {sent ? (
             <motion.div key="success" initial={{ scale: 0.8 }} animate={{ scale: 1 }} style={{ padding: '60px 40px', textAlign: 'center' }}>
               <CheckCircle size={70} color="#16A34A" style={{ margin: '0 auto 20px' }} />
-              <h2 style={{ fontFamily: 'Space Grotesk', color: '#0B397F' }}>Inquiry Secured</h2>
-              <p style={{ color: '#64748B', marginTop: '10px' }}>Your professional profile has been shared with the broker.</p>
+              <h2 style={{ fontFamily: 'Space Grotesk', color: '#0B397F' }}>Lead Transmitted</h2>
+              <p style={{ color: '#64748B', marginTop: '10px', fontFamily: 'Inter' }}>Your request has been prioritized.</p>
             </motion.div>
           ) : (
-            <div style={{ padding: '40px' }}>
-              <h2 style={{ fontFamily: 'Space Grotesk', color: '#0B397F', marginBottom: '10px' }}>Elite Inquiry</h2>
-              <p style={{ color: '#64748B', marginBottom: '30px', fontSize:'0.9rem' }}>Contacting representative for: <strong>{property.title.en}</strong></p>
+            <FormPadding key="form">
+              <h2 style={{ fontFamily: 'Space Grotesk', color: '#0B397F', marginBottom: '30px' }}>Elite Inquiry</h2>
               
               <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom:'20px' }}>
-                    <label style={{ display:'block', fontWeight:800, fontSize:'0.7rem', color:'#0B397F', marginBottom:'8px' }}>CONTACT PHONE</label>
-                    <div style={{ position:'relative' }}>
-                        <Phone size={16} style={{ position:'absolute', left:15, top:18, color:'#0B397F', opacity:0.5 }}/>
-                        <input required type="tel" placeholder="+250..." 
-                            style={{ width:'100%', padding:'16px 16px 16px 45px', borderRadius:'12px', border:'1.5px solid #F1F5F9', background:'#F8FAFC' }}
-                            onChange={e => setFormData({...formData, phone: e.target.value})}
-                        />
-                    </div>
-                </div>
-
-                <div style={{ marginBottom:'25px' }}>
-                    <label style={{ display:'block', fontWeight:800, fontSize:'0.7rem', color:'#0B397F', marginBottom:'8px' }}>MESSAGE</label>
-                    <textarea rows="4" value={formData.message} required 
-                        style={{ width:'100%', padding:'15px', borderRadius:'12px', border:'1.5px solid #F1F5F9', background:'#F8FAFC', outline:'none' }}
-                        onChange={e => setFormData({...formData, message: e.target.value})}
-                    />
-                </div>
-
-                <button disabled={loading} style={{ width:'100%', padding:'20px', borderRadius:'15px', border:'none', background:'linear-gradient(135deg, #0B397F 0%, #F5A623 100%)', color:'white', fontWeight:800, fontFamily:'Space Grotesk', cursor:'pointer' }}>
-                  {loading ? "SECURING..." : "TRANSMIT LEAD"}
-                </button>
+                <InputGroup>
+                  <label>Contact Phone</label>
+                  <div className="field">
+                    <Phone size={18} />
+                    <input type="tel" required placeholder="+250..." value={phone} onChange={e => setPhone(e.target.value)} />
+                  </div>
+                </InputGroup>
+                <InputGroup>
+                  <label>Message</label>
+                  <div className="field">
+                    <textarea rows="4" value={message} onChange={e => setMessage(e.target.value)} required />
+                  </div>
+                </InputGroup>
+                <SubmitBtn type="submit" disabled={loading}>
+                  {loading ? <Loader2 className="animate-spin" size={20}/> : <><Send size={18}/> SEND INQUIRY</>}
+                </SubmitBtn>
               </form>
-            </div>
+            </FormPadding>
           )}
         </AnimatePresence>
       </ModalCard>

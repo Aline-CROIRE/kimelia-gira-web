@@ -14,7 +14,7 @@ const PageWrapper = styled.div`
 
 const FormCard = styled.div`
   background: white; border-radius: 35px; padding: 50px;
-  max-width: 800px; margin: 0 auto; border: 1px solid #E2E8F0;
+  max-width: 850px; margin: 0 auto; border: 1px solid #E2E8F0;
   box-shadow: 0 20px 50px rgba(11, 57, 127, 0.05);
   @media (max-width: 600px) { padding: 30px 20px; }
 `;
@@ -28,7 +28,7 @@ const InputGroup = styled.div`
   input, textarea {
     width: 100%; padding: 18px; border-radius: 14px; border: 1.5px solid #F1F5F9;
     background: #F8FAFC; font-family: 'Inter'; font-weight: 500; outline: none; transition: 0.3s;
-    &:focus { border-color: #0B397F; background: white; }
+    &:focus { border-color: #0B397F; background: white; box-shadow: 0 0 0 4px rgba(11, 57, 127, 0.05); }
   }
 `;
 
@@ -80,34 +80,40 @@ const EditProperty = () => {
       await updateProperty(id, cleanData);
       navigate('/dashboard'); 
     } catch (err) {
-      alert("Update Failed. Check local backend connection.");
+      alert("Update Failed. Check local server connection.");
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return (
-    <PageWrapper style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-      <Loader2 size={50} className="animate-spin" color="#0B397F"/>
-    </PageWrapper>
-  );
+  if (loading) return <div style={{textAlign:'center', padding:'200px'}}><Loader2 className="animate-spin" size={50} color="#0B397F"/></div>;
 
   return (
     <PageWrapper>
-      <div style={{maxWidth:800, margin:'0 auto'}}>
+      <div style={{maxWidth:850, margin:'0 auto'}}>
         <button onClick={() => navigate(-1)} style={{background:'none', border:'none', color:'#0B397F', fontWeight:800, marginBottom:'30px', cursor:'pointer', display:'flex', alignItems:'center', gap:'10px', fontFamily:'Space Grotesk'}}>
-            <ArrowLeft size={18}/> BACK TO PORTFOLIO
+            <ArrowLeft size={18}/> DISCARD CHANGES
         </button>
 
         <FormCard>
-          <h1 style={{fontFamily:'Space Grotesk', color:'#0B397F', fontSize:'2.2rem', marginBottom:'35px'}}>Refine Asset</h1>
+          <div style={{marginBottom:'40px'}}>
+            <h1 style={{fontFamily:'Space Grotesk', color:'#0B397F', fontSize:'2.2rem', letterSpacing:'-1px'}}>Refine Asset</h1>
+            <p style={{color:'#64748B', fontWeight:500}}>Modify the technical and financial details of your listing.</p>
+          </div>
+
           <form onSubmit={handleUpdate}>
-            <InputGroup><label><Info size={16}/> Headline</label><input value={formData.title} required onChange={e => setFormData({...formData, title: e.target.value})} /></InputGroup>
+            <InputGroup>
+              <label><Info size={16} color="#F5A623"/> Asset Headline</label>
+              <input value={formData.title} required onChange={e => setFormData({...formData, title: e.target.value})} />
+            </InputGroup>
+            
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px'}}>
-              <InputGroup><label><DollarSign size={16}/> Price</label><input type="number" value={formData.price} required onChange={e => setFormData({...formData, price: e.target.value})} /></InputGroup>
-              <InputGroup><label><MapPin size={16}/> Location</label><input value={formData.address} required onChange={e => setFormData({...formData, address: e.target.value})} /></InputGroup>
+              <InputGroup><label><DollarSign size={16} color="#F5A623"/> Price (RWF)</label><input type="number" value={formData.price} required onChange={e => setFormData({...formData, price: e.target.value})} /></InputGroup>
+              <InputGroup><label><MapPin size={16} color="#F5A623"/> Location</label><input value={formData.address} required onChange={e => setFormData({...formData, address: e.target.value})} /></InputGroup>
             </div>
-            <InputGroup><label>Deep Narrative</label><textarea rows="6" value={formData.description} required onChange={e => setFormData({...formData, description: e.target.value})} /></InputGroup>
+
+            <InputGroup><label>Architectural Narrative</label><textarea rows="6" value={formData.description} required onChange={e => setFormData({...formData, description: e.target.value})} /></InputGroup>
+            
             <UpdateBtn type="submit" disabled={saving}>
               {saving ? "SYNCHRONIZING..." : <><Save size={20}/> UPDATE SANCTUARY</>}
             </UpdateBtn>
